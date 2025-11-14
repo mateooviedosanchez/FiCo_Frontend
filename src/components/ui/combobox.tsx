@@ -39,10 +39,10 @@ export function Combobox({ items, value, onChange, placeholder = "Selecciona..."
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          variant="outline"
+          variant="default"
           role="combobox"
           aria-expanded={open}
-          className={cn("w-[200px] justify-between", className)}
+          className={cn("w-full justify-between", className)}
         >
           {internalValue
             ? items.find((it) => it.value === internalValue)?.label

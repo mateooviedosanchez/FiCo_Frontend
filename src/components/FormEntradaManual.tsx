@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -18,14 +17,22 @@ import { Input } from "@/components/ui/input";
 import { Calendar } from "./ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Combobox } from "@/components/ui/combobox";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
-const CATEGORIES = [
+const categories = [
   { value: "alimentos", label: "Alimentos" },
   { value: "transporte", label: "Transporte" },
   { value: "servicios", label: "Servicios" },
 ]
 
-const SUBCATEGORIES_MAP: Record<string, { value: string; label: string }[]> = {
+const metodosPago = [
+  { value: "efectivo", label: "Efectivo" },
+  { value: "tarjeta", label: "Tarjeta" },
+]
+
+const subcategories_map: Record<string, { value: string; label: string }[]> = {
   alimentos: [
     { value: "comida", label: "Comida" },
     { value: "snacks", label: "Snacks" },
@@ -41,7 +48,7 @@ const SUBCATEGORIES_MAP: Record<string, { value: string; label: string }[]> = {
 }
 
 const formSchema = z.object({
-  fecha: z.string().min(2, {
+  fecha: z.date().min(2, {
     message: "Selecciona la fecha del recibo de pago.",
   }),
   metodoPago: z.string().min(2, {
@@ -64,10 +71,9 @@ const formSchema = z.object({
 
 export function FormEntradaManual() {
   const form = useForm<z.infer<typeof formSchema>>({
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  resolver: zodResolver(formSchema) as any,
+    resolver: zodResolver(formSchema) as any,
     defaultValues: {
-      fecha: "",
+      fecha: new Date(),
       metodoPago: "",
       productos: [
         { nombre: "", precio: 0, cantidad: 1, categoria: "", subCategoria: "" }
@@ -95,37 +101,36 @@ export function FormEntradaManual() {
           name="fecha"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>Fecha</FormLabel>
-
+              <FormLabel className="text-base-bold">Fecha</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
                   <FormControl>
                     <Button
-                      variant="outline"
-                      className="w-[240px] justify-start text-left font-normal"
+                      variant={"default"}
+                      className={cn(
+                        "w-full pl-3 text-left font-normal",
+                        !field.value && "text-muted-foreground"
+                      )}
                     >
                       {field.value ? (
-                        new Date(field.value).toLocaleDateString()
+                        format(field.value, "PPP")
                       ) : (
-                        <span>Selecciona una fecha</span>
+                        <span>Selecciona una opción</span>
                       )}
+                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                     </Button>
                   </FormControl>
                 </PopoverTrigger>
-
                 <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="single"
-                    selected={field.value ? new Date(field.value) : undefined}
-                    onSelect={(date) =>
-                      field.onChange(date?.toISOString().split("T")[0])
-                    }
+                    selected={field.value}
+                    onSelect={field.onChange}
+                    disabled={(date) => date < new Date()}
                     captionLayout="dropdown"
                   />
                 </PopoverContent>
               </Popover>
-
-              <FormDescription>Ingresa la fecha del gasto.</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -137,100 +142,111 @@ export function FormEntradaManual() {
             <FormItem>
               <FormLabel>Metodo de Pago</FormLabel>
               <FormControl>
-                <Input placeholder="Ej: debito" {...field} />
+                <Combobox
+                  items={metodosPago}
+                  value={field.value}
+                  onChange={field.onChange}
+                  placeholder="Selecciona una opción"
+                />
               </FormControl>
-              <FormDescription>Ingresa el metodo de pago.</FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
 
         {/* sección productos */}
+        <h2 className="text-xl font-semibold">Productos</h2>
         {fields.map((field, index) => {
           const categoriaValue = form.watch(`productos.${index}.categoria`)
-          const subItems = SUBCATEGORIES_MAP[categoriaValue] ?? []
+          const subItems = subcategories_map[categoriaValue] ?? []
 
           return (
-          <div key={field.id} className="border p-3 rounded-md space-y-2">
-            <FormField
-              control={form.control}
-              name={`productos.${index}.nombre`}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nombre</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Nombre" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name={`productos.${index}.precio`}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Precio</FormLabel>
-                  <FormControl>
-                    <Input type="number" placeholder="Precio Unitario" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name={`productos.${index}.cantidad`}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Cantidad</FormLabel>
-                  <FormControl>
-                    <Input type="number" placeholder="Cantidad del Producto" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name={`productos.${index}.categoria`}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Categoria</FormLabel>
-                  <FormControl>
-                    <Combobox
-                      items={CATEGORIES}
-                      value={field.value}
-                      onChange={field.onChange}
-                      placeholder="Categoria"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name={`productos.${index}.subCategoria`}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>SubCategoria</FormLabel>
-                  <FormControl>
-                    <Combobox
-                      items={subItems}
-                      value={field.value}
-                      onChange={field.onChange}
-                      placeholder="SubCategoria"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button type="button" onClick={() => remove(index)}>
-              Eliminar
-            </Button>
-          </div>
+            <div key={field.id} className="border p-3 rounded-md space-y-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name={`productos.${index}.nombre`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Nombre</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Nombre" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="flex gap-4">
+                  <FormField
+                    control={form.control}
+                    name={`productos.${index}.precio`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Precio</FormLabel>
+                        <FormControl>
+                          <Input type="number" placeholder="Precio Unitario" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name={`productos.${index}.cantidad`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Cantidad</FormLabel>
+                        <FormControl>
+                          <Input type="number" placeholder="Cantidad del Producto" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name={`productos.${index}.categoria`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Categoria</FormLabel>
+                      <FormControl>
+                        <Combobox
+                          items={categories}
+                          value={field.value}
+                          onChange={field.onChange}
+                          placeholder="Categoria"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name={`productos.${index}.subCategoria`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>SubCategoria</FormLabel>
+                      <FormControl>
+                        <Combobox
+                          items={subItems}
+                          value={field.value}
+                          onChange={field.onChange}
+                          placeholder="SubCategoria"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <Button type="button" onClick={() => remove(index)}>
+                Eliminar
+              </Button>
+            </div>
           )
         })}
 

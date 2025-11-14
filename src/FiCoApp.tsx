@@ -9,17 +9,17 @@ import Reporte from "./app/Reporte"
 const FiCoApp = () => {
     return (
         <>
-            <div className="w-full flex justify-center fixed top-0 left-0 py-4 bg-white shadow">
-                <NavBar></NavBar>
+            <div className="fixed top-0 left-0 w-full bg-white shadow py-4 flex justify-center z-10">
+                <NavBar />
             </div>
-            <div className="container mt-20">
+            <div className="container mx-auto mt-20 px-4 flex justify-center"> 
                 <Routes>
-                    <Route path="/" element={<Dashboard></Dashboard>}></Route>
-                    <Route path="/login" element={<Login></Login>}></Route>
-                    <Route path="/entrada-manual" element={<EntradaManual></EntradaManual>}></Route>
-                    <Route path="/recibos" element={<VerRecibos></VerRecibos>}></Route>
-                    <Route path="/reportes" element={<Reporte></Reporte>}></Route>
-                    <Route path="/*" element={<Navigate to='/'></Navigate>}></Route>
+                    <Route path="/" element={<Dashboard />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/entrada-manual" element={<EntradaManual />} />
+                    <Route path="/recibos" element={<VerRecibos />} />
+                    <Route path="/reportes" element={<Reporte />} />
+                    <Route path="*" element={<Navigate to="/" />} />
                 </Routes>
             </div>
         </>

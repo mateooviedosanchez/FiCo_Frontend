@@ -7,7 +7,7 @@ import FiCoApp from './FiCoApp'
 createRoot(document.getElementById('root')!).render(
   <BrowserRouter>
     <StrictMode>
-      <FiCoApp />
+      <FiCoApp/>
     </StrictMode>
   </BrowserRouter>,
 )
