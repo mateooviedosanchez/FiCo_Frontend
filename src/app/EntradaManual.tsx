@@ -2,7 +2,7 @@ import { FormEntradaManual } from "@/components/FormEntradaManual"
 
 const EntradaManual = () => {
   return (
-    <div className="container py-2">
+    <div className="container py-2 flex flex-col gap-6">
       <h1 className="text-header">Añadir gasto manualmente</h1>
       <p className="text-base-regular">Informacion Basica</p>
       <div className="w-full">
