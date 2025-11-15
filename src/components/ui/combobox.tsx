@@ -39,7 +39,7 @@ export function Combobox({ items, value, onChange, placeholder = "Selecciona..."
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          variant="default"
+          variant="outline"
           role="combobox"
           aria-expanded={open}
           className={cn("w-full justify-between", className)}
@@ -51,7 +51,7 @@ export function Combobox({ items, value, onChange, placeholder = "Selecciona..."
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent className="w-[200px] p-0">
+      <PopoverContent className="w-[300px] p-0">
         <Command>
           <CommandInput placeholder={`Buscar ${placeholder.toLowerCase()}...`} />
           <CommandList>

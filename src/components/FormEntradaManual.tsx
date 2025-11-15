@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Calendar } from "./ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Combobox } from "@/components/ui/combobox";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Plus, Trash2Icon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 
@@ -106,7 +106,7 @@ export function FormEntradaManual() {
                 <PopoverTrigger asChild>
                   <FormControl>
                     <Button
-                      variant={"default"}
+                      variant={"outline"}
                       className={cn(
                         "w-full pl-3 text-left font-normal",
                         !field.value && "text-muted-foreground"
@@ -243,8 +243,9 @@ export function FormEntradaManual() {
                   )}
                 />
               </div>
-              <Button type="button" onClick={() => remove(index)}>
+              <Button type="button" variant="destructive" onClick={() => remove(index)}>
                 Eliminar
+                <Trash2Icon className="ml-auto h-4 w-4 " />
               </Button>
             </div>
           )
@@ -253,14 +254,16 @@ export function FormEntradaManual() {
         <Button
           type="button"
           className="w-full"
+          variant="secondary"
           onClick={
             () => append({ nombre: "", precio: 0, cantidad: 1, categoria: "", subCategoria: "" })
           }
         >
-          Agregar producto
+          Agregar producto al recibo
+          <Plus />
         </Button>
 
-        <Button type="submit" className="w-full">Enviar</Button>
+        <Button type="submit" className="w-full">Listo</Button>
       </form>
     </Form>
   );

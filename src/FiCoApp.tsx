@@ -9,10 +9,10 @@ import Reporte from "./app/Reporte"
 const FiCoApp = () => {
     return (
         <>
-            <div className="fixed top-0 left-0 w-full bg-white shadow py-4 flex justify-center z-10">
+            <div className="top-0 left-0 w-full bg-white shadow py-5 flex justify-center z-5">
                 <NavBar />
             </div>
-            <div className="container mx-auto mt-20 px-4 flex justify-center"> 
+            <div className="container mx-auto mt-5 px-auto flex justify-center"> 
                 <Routes>
                     <Route path="/" element={<Dashboard />} />
                     <Route path="/login" element={<Login />} />
