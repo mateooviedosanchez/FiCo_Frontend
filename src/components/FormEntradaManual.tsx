@@ -20,6 +20,7 @@ import { Combobox } from "@/components/ui/combobox";
 import { CalendarIcon, Plus, Trash2Icon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
 
 const categories = [
   { value: "alimentos", label: "Alimentos" },
@@ -81,6 +82,8 @@ export function FormEntradaManual() {
     },
   });
 
+  const navigate = useNavigate(); // <-- agregado
+
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "productos",
@@ -90,6 +93,7 @@ export function FormEntradaManual() {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     console.log(values);
+    navigate("/dashboard"); // <-- navega al dashboard después de enviar
   }
 
   return (

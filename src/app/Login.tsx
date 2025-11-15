@@ -1,18 +1,8 @@
-import { AppSidebar } from "@/components/app-sidebar"
 import { FormIniciarSesion } from "@/components/FormIniciarSesion"
-import { SidebarProvider } from "@/components/ui/sidebar"
 
 const Login = () => {
   return (
-    <SidebarProvider
-      style={
-        {
-          "--sidebar-width": "calc(var(--spacing) * 72)",
-          "--header-height": "calc(var(--spacing) * 12)",
-        } as React.CSSProperties
-      }
-    >
-      <AppSidebar variant="sidebar" />
+    <>
       <div className="grid w-full min-h-screen lg:grid-cols-2">
         <div className="flex flex-col gap-4 p-6 md:p-10">
           <div className="flex justify-center gap-2 md:justify-start">
@@ -31,7 +21,7 @@ const Login = () => {
           />
         </div>
       </div>
-    </SidebarProvider>
+    </>
   )
 }
 export default Login
