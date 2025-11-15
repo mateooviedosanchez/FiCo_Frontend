@@ -34,6 +34,13 @@ export function NavBar() {
       <NavigationMenuList className="flex-wrap">
         <NavigationMenuItem>
           <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+            <Link to="/crear-cuenta">Crear Cuenta</Link>
+          </NavigationMenuLink>
+        </NavigationMenuItem>
+      </NavigationMenuList>
+      <NavigationMenuList className="flex-wrap">
+        <NavigationMenuItem>
+          <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
             <Link to="/entrada-manual">+ Entreda Manual</Link>
           </NavigationMenuLink>
         </NavigationMenuItem>
@@ -42,13 +49,6 @@ export function NavBar() {
         <NavigationMenuItem>
           <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
             <Link to="/recibos">Recibos</Link>
-          </NavigationMenuLink>
-        </NavigationMenuItem>
-      </NavigationMenuList>
-      <NavigationMenuList className="flex-wrap">
-        <NavigationMenuItem>
-          <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-            <Link to="/reportes">Reportes</Link>
           </NavigationMenuLink>
         </NavigationMenuItem>
       </NavigationMenuList>
