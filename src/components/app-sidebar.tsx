@@ -29,11 +29,6 @@ const data = {
       icon: IconDashboard,
     },
     {
-      title: "Ver Recibos",
-      url: "/recibos",
-      icon: IconReceipt,
-    },
-    {
       title: "login",
       url: "/login",
       icon: IconReceipt,
