@@ -41,7 +41,7 @@ export function NavBar() {
       <NavigationMenuList className="flex-wrap">
         <NavigationMenuItem>
           <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-            <Link to="/entrada-manual">+ Entreda Manual</Link>
+            <Link to="/entrada-manual">+ Añadir Recibo</Link>
           </NavigationMenuLink>
         </NavigationMenuItem>
       </NavigationMenuList>

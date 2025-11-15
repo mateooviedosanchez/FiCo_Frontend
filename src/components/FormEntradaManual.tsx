@@ -263,7 +263,7 @@ export function FormEntradaManual() {
           <Plus />
         </Button>
 
-        <Button type="submit" className="w-full">Listo</Button>
+        <Button type="submit" className="w-full">Agregar Recibo</Button>
       </form>
     </Form>
   );
