@@ -18,7 +18,7 @@ const EntradaManual = () => {
         <SiteHeader />
         <div className="min-h-screen flex flex-col items-center pt-10 px-4">
           <div className="text-center mb-6">
-            <h1 className="text-4xl font-bold">Añadir gasto</h1>
+            <h1 className="text-4xl font-bold">Añadir Recibo</h1>
           </div>
           <div className="w-full ">
             <FormEntradaManual />

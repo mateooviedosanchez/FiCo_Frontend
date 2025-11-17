@@ -5,6 +5,7 @@ import CrearCuenta from "./app/CrearCuenta"
 import { AuthProvider } from "./context/AuthProvider"
 import { RequireAuth } from "./components/RequireAuth"
 import Login from "./app/Login"
+import EditarEntradaManual from "./app/EditarEntradaManual"
 
 const FiCoApp = () => {
     return (
@@ -15,6 +16,7 @@ const FiCoApp = () => {
                         <Routes>
                             <Route path="/" element={<Login />} />
                             <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
+                            <Route path="/editar-recibo/:id" element={<EditarEntradaManual />} />
                             <Route path="/crear-cuenta" element={<CrearCuenta />} />
                             <Route path="/entrada-manual" element={<RequireAuth><EntradaManual /></RequireAuth>} />
                             <Route path="*" element={<Navigate to="/" replace/>} />

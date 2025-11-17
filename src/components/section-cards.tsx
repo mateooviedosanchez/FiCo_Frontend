@@ -1,56 +1,60 @@
-import { IconTrendingDown3 } from "@tabler/icons-react"
-
-import { Badge } from "@/components/ui/badge"
 import {
   Card,
-  CardAction,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
 
 export function SectionCards() {
+  const presupuesto = 6200.00
+  const totalGastado = 4250.75
+  const promedioRecibo = 75.34
+  const totalAcumulado = 45678
+
   return (
     <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Total del mes</CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            $4,250.75
+          <CardTitle >
+            Presupuesto
           </CardTitle>
-          <CardAction>
-            <Badge variant="outline">
-              <IconTrendingDown3 />
-              -12.5%
-            </Badge>
-          </CardAction>
+          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+            ${presupuesto.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </CardTitle>
         </CardHeader>
-        <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            -12.5% <IconTrendingDown3 className="size-4" />
-          </div>
-          <div className="text-muted-foreground">desde el ultimo mes</div>
-        </CardFooter>
       </Card>
+
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Promedio por Recibo</CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            $75.34
+          <CardTitle >
+            Total gastado
           </CardTitle>
+          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+            ${totalGastado.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </CardTitle>
+          <CardDescription >
+            de lo que va del mes
+          </CardDescription>
         </CardHeader>
-        <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
+      </Card>
+
+      <Card className="@container/card">
+        <CardHeader>
+          <CardTitle className="flex-col items-start gap-1.5 text-sm">Promedio por Recibo</CardTitle>
+          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+            ${promedioRecibo.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </CardTitle>
+          <CardDescription>
             Por compra
-          </div>
-        </CardFooter>
+          </CardDescription>
+        </CardHeader>
       </Card>
+
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Total gastado del mes pasado</CardDescription>
+          <CardTitle className="flex-col items-start gap-1.5 text-sm">Total gastado</CardTitle>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            $45,678
+            ${totalAcumulado.toLocaleString('es-MX')}
           </CardTitle>
         </CardHeader>
       </Card>

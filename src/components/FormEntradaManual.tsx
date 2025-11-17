@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
+import { useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -19,6 +20,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Combobox } from "@/components/ui/combobox";
 import { CalendarIcon, Plus, Trash2Icon } from "lucide-react";
 import { format } from "date-fns";
+import { es } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 
@@ -49,6 +51,9 @@ const subcategories_map: Record<string, { value: string; label: string }[]> = {
 }
 
 const formSchema = z.object({
+  nombre: z.string().min(1, {
+    message: "Selecciona el nombre del recibo de pago.",
+  }),
   fecha: z.date().min(2, {
     message: "Selecciona la fecha del recibo de pago.",
   }),
@@ -68,38 +73,71 @@ const formSchema = z.object({
       })
     )
     .min(1, { message: "Agrega al menos un producto." }),
+  total: z.coerce.number(),
 });
 
 export function FormEntradaManual() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema) as any,
     defaultValues: {
+      nombre: "",
       fecha: new Date(),
       metodoPago: "",
       productos: [
         { nombre: "", precio: 0, cantidad: 1, categoria: "", subCategoria: "" }
       ],
+      total: 0,
     },
   });
 
-  const navigate = useNavigate(); // <-- agregado
+  const navigate = useNavigate();
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "productos",
   });
 
+  useEffect(() => {
+    const subscription = form.watch((value, { name }) => {
+      if (name?.startsWith('productos')) {
+        const productos = value.productos || [];
+        const total = productos.reduce((acc, p) => {
+          const precio = Number(p?.precio) || 0;
+          const cantidad = Number(p?.cantidad) || 0;
+          return acc + precio * cantidad;
+        }, 0);
+        form.setValue("total", total);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [form]);
+
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
-    navigate("/dashboard"); // <-- navega al dashboard después de enviar
+    const formattedValues = {
+      ...values,
+      fecha: format(values.fecha, "dd/MM/yyyy")
+    };
+    console.log(formattedValues);
+    navigate("/dashboard");
   }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="border p-3 rounded-md space-y-2">
         {/* sección recibo */}
+        <FormField
+          control={form.control}
+          name="nombre"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Nombre</FormLabel>
+              <FormControl>
+                <Input placeholder="Ej. Oxxo" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name="fecha"
@@ -117,7 +155,7 @@ export function FormEntradaManual() {
                       )}
                     >
                       {field.value ? (
-                        format(field.value, "PPP")
+                        format(field.value, "PPP", { locale: es })
                       ) : (
                         <span>Selecciona una opción</span>
                       )}
@@ -174,7 +212,7 @@ export function FormEntradaManual() {
                     <FormItem>
                       <FormLabel>Nombre</FormLabel>
                       <FormControl>
-                        <Input placeholder="Nombre" {...field} />
+                        <Input placeholder="Ej. Pepsi" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -186,9 +224,12 @@ export function FormEntradaManual() {
                     name={`productos.${index}.precio`}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Precio</FormLabel>
+                        <FormLabel>Precio Unitario</FormLabel>
                         <FormControl>
-                          <Input type="number" placeholder="Precio Unitario" {...field} />
+                          <div className="relative">
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                            <Input type="number" placeholder="0" {...field} className="pl-7" />
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -199,9 +240,9 @@ export function FormEntradaManual() {
                     name={`productos.${index}.cantidad`}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Cantidad</FormLabel>
+                        <FormLabel>Cantidad del Producto</FormLabel>
                         <FormControl>
-                          <Input type="number" placeholder="Cantidad del Producto" {...field} />
+                          <Input type="number" placeholder="0" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -221,7 +262,7 @@ export function FormEntradaManual() {
                           items={categories}
                           value={field.value}
                           onChange={field.onChange}
-                          placeholder="Categoria"
+                          placeholder="Selecciona una categoria"
                         />
                       </FormControl>
                       <FormMessage />
@@ -239,7 +280,7 @@ export function FormEntradaManual() {
                           items={subItems}
                           value={field.value}
                           onChange={field.onChange}
-                          placeholder="SubCategoria"
+                          placeholder="Selecciona una subcategoria"
                         />
                       </FormControl>
                       <FormMessage />
@@ -266,6 +307,19 @@ export function FormEntradaManual() {
           Agregar producto al recibo
           <Plus />
         </Button>
+
+        <FormField
+          control={form.control}
+          name="total"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Total</FormLabel>
+              <FormControl>
+                <Input readOnly value={`$${(Number(field.value) || 0).toFixed(2)}`} />
+              </FormControl>
+            </FormItem>
+          )}
+        />
 
         <Button type="submit" className="w-full">Agregar Recibo</Button>
       </form>

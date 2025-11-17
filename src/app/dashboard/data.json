@@ -2,19 +2,19 @@
     {
       "id": 10,
       "nombre": "Walmart",
-      "fecha": "2025-03-01T16:10:00",
+      "fecha": "11/11/2025",
       "total": 1045.99
     },
     {
       "id": 11,
       "nombre": "Starbucks",
-      "fecha": "2025-03-02T08:45:00",
+      "fecha": "02/03/2025",
       "total": 89.00
     },
     {
       "id": 12,
       "nombre": "Office Depot",
-      "fecha": "2025-03-03T14:30:00",
+      "fecha": "03/03/2025",
       "total": 560.40
     }
 ]
