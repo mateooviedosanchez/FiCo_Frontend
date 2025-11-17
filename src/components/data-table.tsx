@@ -88,9 +88,9 @@ import { Link } from "react-router-dom"
 
 export const schema = z.object({
   id: z.number(),
-  nombre: z.number(),
+  nombre: z.string(),
   fecha: z.string(),
-  total: z.int(),
+  total: z.number(),
 })
 
 

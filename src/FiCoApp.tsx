@@ -12,16 +12,22 @@ const FiCoApp = () => {
         <>
             <BrowserRouter>
                 <AuthProvider>
-                    <div className="container mx-auto px-4 flex justify-center">
-                        <Routes>
-                            <Route path="/" element={<Login />} />
-                            <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
-                            <Route path="/editar-recibo/:id" element={<EditarEntradaManual />} />
-                            <Route path="/crear-cuenta" element={<CrearCuenta />} />
-                            <Route path="/entrada-manual" element={<RequireAuth><EntradaManual /></RequireAuth>} />
-                            <Route path="*" element={<Navigate to="/" replace/>} />
-                        </Routes>
-                    </div>
+                    <Routes>
+                        <Route path="/" element={
+                            <div className="container mx-auto px-4 flex justify-center">
+                                <Login />
+                            </div>
+                        } />
+                        <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
+                        <Route path="/editar-recibo/:id" element={<EditarEntradaManual />} />
+                        <Route path="/crear-cuenta" element={
+                            <div className="container mx-auto px-4 flex justify-center">
+                                <CrearCuenta />
+                            </div>
+                        } />
+                        <Route path="/entrada-manual" element={<RequireAuth><EntradaManual /></RequireAuth>} />
+                        <Route path="*" element={<Navigate to="/" replace />} />
+                    </Routes>
                 </AuthProvider>
             </BrowserRouter>
         </>

@@ -24,10 +24,35 @@ import { es } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 
+// Categorías y Subcategorías:
+// 	Alimentos:
+// 		Comida
+// 		Comida chatarra
+// 	Salud:
+// 		Medicamentos
+// 		Cuidado personal
+// 	Transporte:
+// 		Combustible
+// 		Mantenimiento
+// 		Transporte publico
+// 	Entretenimiento:
+// 		Tecnología
+// 		Películas
+// 		Deporte
+// 		Recreativos
+// 		Streaming
+// 	Servicios:
+// 		Del hogar
+// 	Otros -> Input (El usuario escoge a que categoría corresponde):
+// 		Subcategoría -> Input (El usuario escoge a que categoría corresponde)
+
 const categories = [
   { value: "alimentos", label: "Alimentos" },
+  { value: "salud", label: "Salud" },
   { value: "transporte", label: "Transporte" },
+  { value: "entretenimiento", label: "Entretenimiento" },
   { value: "servicios", label: "Servicios" },
+  { value: "otros", label: "Otros" },
 ]
 
 const metodosPago = [
@@ -38,15 +63,29 @@ const metodosPago = [
 const subcategories_map: Record<string, { value: string; label: string }[]> = {
   alimentos: [
     { value: "comida", label: "Comida" },
-    { value: "snacks", label: "Snacks" },
+    { value: "comida_chatarra", label: "Comida Chatarra" },
+  ],
+  salud: [
+    { value: "medicamentos", label: "Medicamentos" },
+    { value: "cuidado_personal", label: "Cuidado personal" },
   ],
   transporte: [
-    { value: "bus", label: "Bus" },
-    { value: "taxi", label: "Taxi" },
+    { value: "combustible", label: "Combustible" },
+    { value: "mantenimiento", label: "Mantenimiento" },
+    { value: "transporte_publico", label: "Transporte público" },
+  ],
+  entretenimiento: [
+    { value: "tecnologia", label: "Tecnología" },
+    { value: "peliculas", label: "Películas" },
+    { value: "deporte", label: "Deporte" },
+    { value: "recreativos", label: "Recreativos" },
+    { value: "streaming", label: "Streaming" },
   ],
   servicios: [
-    { value: "internet", label: "Internet" },
-    { value: "telefono", label: "Teléfono" },
+    { value: "hogar", label: "Del hogar" },
+  ],
+  otros: [
+    { value: "categoria_personalizada", label: "Categoría personalizada" },
   ],
 }
 
@@ -218,7 +257,7 @@ export function FormEntradaManual() {
                     </FormItem>
                   )}
                 />
-                <div className="flex gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
                     name={`productos.${index}.precio`}

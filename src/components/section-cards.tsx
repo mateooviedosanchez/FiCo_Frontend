@@ -1,15 +1,35 @@
+import { useState } from "react"
 import {
   Card,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
 
 export function SectionCards() {
-  const presupuesto = 6200.00
+  const [presupuesto, setPresupuesto] = useState(6200)
   const totalGastado = 4250.75
   const promedioRecibo = 75.34
   const totalAcumulado = 45678
+
+  const handlePresupuestoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = e.target.value
+
+    if (inputValue === '') {
+      setPresupuesto(0)
+      return
+    }
+
+    const value = parseFloat(inputValue)
+    if (!isNaN(value) && value >= 0) {
+      setPresupuesto(value)
+    }
+  }
+
+  const handlePresupuestoFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    e.target.select()
+  }
 
   return (
     <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
@@ -18,9 +38,21 @@ export function SectionCards() {
           <CardTitle >
             Presupuesto
           </CardTitle>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            ${presupuesto.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-          </CardTitle>
+          <div className="flex items-center gap-1">
+            <span className="text-2xl font-semibold">$</span>
+            <Input
+              type="number"
+              value={presupuesto}
+              onChange={handlePresupuestoChange}
+              onFocus={handlePresupuestoFocus}
+              className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl border-none p-0 h-auto focus-visible:ring-0 focus-visible:ring-offset-0"
+              step="1"
+              min="0"
+            />
+          </div>
+          <CardDescription >
+            Selecciona tu presupuesto mensual
+          </CardDescription>
         </CardHeader>
       </Card>
 
