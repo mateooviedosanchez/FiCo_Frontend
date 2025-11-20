@@ -13,8 +13,6 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 // Base de datos de usuarios (reemplaza con API real cuando sea necesario)
 const DEFAULT_USERS = [
   { email: "admin@gmail.com", password: "123", name: "admin" },
-  { email: "mateo@gmail.com", password: "pass123", name: "mateo" },
-  { email: "usuario@gmail.com", password: "user456", name: "usuario" },
 ]
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {

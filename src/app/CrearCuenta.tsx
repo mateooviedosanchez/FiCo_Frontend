@@ -1,4 +1,4 @@
-import { FormCrearCuenta } from "@/components/FormCrearCuenta"
+import { FormCrearCuenta } from "@/components/forms/FormCrearCuenta"
 
 const CrearCuenta = () => {
   return (

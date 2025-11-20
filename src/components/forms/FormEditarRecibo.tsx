@@ -14,8 +14,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Calendar } from "./ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { Calendar } from "../ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Combobox } from "@/components/ui/combobox";
 import { CalendarIcon, Plus, Trash2Icon } from "lucide-react";
 import { format } from "date-fns";
@@ -25,8 +25,11 @@ import { useNavigate, useParams } from "react-router-dom";
 
 const categories = [
   { value: "alimentos", label: "Alimentos" },
+  { value: "salud", label: "Salud" },
   { value: "transporte", label: "Transporte" },
+  { value: "entretenimiento", label: "Entretenimiento" },
   { value: "servicios", label: "Servicios" },
+  { value: "otros", label: "Otros" },
 ]
 
 const metodosPago = [
@@ -37,15 +40,29 @@ const metodosPago = [
 const subcategories_map: Record<string, { value: string; label: string }[]> = {
   alimentos: [
     { value: "comida", label: "Comida" },
-    { value: "snacks", label: "Snacks" },
+    { value: "comida_chatarra", label: "Comida Chatarra" },
+  ],
+  salud: [
+    { value: "medicamentos", label: "Medicamentos" },
+    { value: "cuidado_personal", label: "Cuidado personal" },
   ],
   transporte: [
-    { value: "bus", label: "Bus" },
-    { value: "taxi", label: "Taxi" },
+    { value: "combustible", label: "Combustible" },
+    { value: "mantenimiento", label: "Mantenimiento" },
+    { value: "transporte_publico", label: "Transporte público" },
+  ],
+  entretenimiento: [
+    { value: "tecnologia", label: "Tecnología" },
+    { value: "peliculas", label: "Películas" },
+    { value: "deporte", label: "Deporte" },
+    { value: "recreativos", label: "Recreativos" },
+    { value: "streaming", label: "Streaming" },
   ],
   servicios: [
-    { value: "internet", label: "Internet" },
-    { value: "telefono", label: "Teléfono" },
+    { value: "hogar", label: "Del hogar" },
+  ],
+  otros: [
+    { value: "categoria_personalizada", label: "Categoría personalizada" },
   ],
 }
 

@@ -1,5 +1,5 @@
-import { AppSidebar } from "@/components/app-sidebar"
-import { FormEntradaManual } from "@/components/FormEntradaManual"
+import { AppSidebar } from "@/components/components-sidebar/app-sidebar"
+import { FormEntradaManual } from "@/components/forms/FormEntradaManual"
 import { SiteHeader } from "@/components/site-header"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 

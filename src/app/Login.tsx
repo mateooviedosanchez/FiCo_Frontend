@@ -1,4 +1,4 @@
-import { FormIniciarSesion } from "@/components/FormIniciarSesion"
+import { FormIniciarSesion } from "@/components/forms/FormIniciarSesion"
 
 const Login = () => {
   return (

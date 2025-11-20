@@ -15,36 +15,14 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Calendar } from "./ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { Calendar } from "../ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Combobox } from "@/components/ui/combobox";
 import { CalendarIcon, Plus, Trash2Icon } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
-
-// Categorías y Subcategorías:
-// 	Alimentos:
-// 		Comida
-// 		Comida chatarra
-// 	Salud:
-// 		Medicamentos
-// 		Cuidado personal
-// 	Transporte:
-// 		Combustible
-// 		Mantenimiento
-// 		Transporte publico
-// 	Entretenimiento:
-// 		Tecnología
-// 		Películas
-// 		Deporte
-// 		Recreativos
-// 		Streaming
-// 	Servicios:
-// 		Del hogar
-// 	Otros -> Input (El usuario escoge a que categoría corresponde):
-// 		Subcategoría -> Input (El usuario escoge a que categoría corresponde)
 
 const categories = [
   { value: "alimentos", label: "Alimentos" },

@@ -1,5 +1,5 @@
-import { AppSidebar } from "@/components/app-sidebar"
-import { FormEditarRecibo } from "@/components/FormEditarRecibo"
+import { AppSidebar } from "@/components/components-sidebar/app-sidebar"
+import { FormEditarRecibo } from "@/components/forms/FormEditarRecibo"
 import { SiteHeader } from "@/components/site-header"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { useParams } from "react-router-dom"
