@@ -40,7 +40,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const u = { name: validUser.name ?? email.split("@")[0], email }
     setUser(u)
     localStorage.setItem("auth_user", JSON.stringify(u))
-    // Aquí podrías llamar a un API real y guardar token
   }
 
   const register = async (name: string, email: string, password: string) => {
