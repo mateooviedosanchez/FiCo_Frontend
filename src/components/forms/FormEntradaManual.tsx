@@ -3,7 +3,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useAuth } from "@/context/AuthProvider";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -108,6 +109,9 @@ export function FormEntradaManual() {
   });
 
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
@@ -129,13 +133,49 @@ export function FormEntradaManual() {
     return () => subscription.unsubscribe();
   }, [form]);
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    const formattedValues = {
-      ...values,
-      fecha: format(values.fecha, "dd/MM/yyyy")
-    };
-    console.log(formattedValues);
-    navigate("/dashboard");
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!user?.id) {
+      setError("Usuario no autenticado");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      const payload = {
+        name: values.nombre,
+        date: format(values.fecha, "yyyy-MM-dd"),
+        total: values.total,
+        paymentMethod: values.metodoPago,
+        s3Key: "1k215", // Valor fijo según tu ejemplo
+        products: values.productos.map(p => ({
+          name: p.nombre,
+          price: p.precio,
+          category: p.categoria,
+          subcategory: p.subCategoria,
+          quantity: p.cantidad
+        }))
+      };
+
+      const response = await fetch(`${import.meta.env.VITE_API_BACKEND}/${user.id}/addReceipt`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al crear el recibo");
+      }
+
+      navigate("/dashboard");
+    } catch (err: any) {
+      setError(err.message || "Error al crear el recibo");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -338,7 +378,11 @@ export function FormEntradaManual() {
           )}
         />
 
-        <Button type="submit" className="w-full">Agregar Recibo</Button>
+        {error && <div className="text-sm text-red-600 text-center">{error}</div>}
+        
+        <Button type="submit" className="w-full" disabled={isSubmitting}>
+          {isSubmitting ? "Agregando..." : "Agregar Recibo"}
+        </Button>
       </form>
     </Form>
   );

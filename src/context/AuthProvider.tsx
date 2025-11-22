@@ -1,7 +1,7 @@
-import React, { createContext, useContext, useEffect, useState } from "react"
+import React, { createContext, useContext, useState } from "react"
 
 type AuthContextType = {
-  user: { name: string; email: string } | null
+  user: { id: number; name: string; email: string } | null
   login: (email: string, password: string) => Promise<void>
   logout: () => void
   register: (name: string, email: string, password: string) => Promise<void>
@@ -10,45 +10,60 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-// Base de datos de usuarios (reemplaza con API real cuando sea necesario)
-const DEFAULT_USERS = [
-  { email: "admin@gmail.com", password: "123", name: "admin" },
-]
-
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [users, setUsers] = useState<{ email: string; password: string; name: string }[]>(
-    () => {
-      const s = localStorage.getItem("users")
-      return s ? JSON.parse(s) : DEFAULT_USERS
-    }
-  )
-
-  const [user, setUser] = useState<{ name: string; email: string } | null>(() => {
+  const [user, setUser] = useState<{ id: number; name: string; email: string } | null>(() => {
     const s = localStorage.getItem("auth_user")
     return s ? JSON.parse(s) : null
   })
 
-  useEffect(() => {
-    localStorage.setItem("users", JSON.stringify(users))
-  }, [users])
-
   const login = async (email: string, password: string) => {
-    const validUser = users.find((u) => u.email === email && u.password === password)
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_BACKEND}/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      })
 
-    if (!validUser) throw new Error("Credenciales inválidas")
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.message || "Credenciales inválidas")
+      }
 
-    const u = { name: validUser.name ?? email.split("@")[0], email }
-    setUser(u)
-    localStorage.setItem("auth_user", JSON.stringify(u))
+      const data = await response.json()
+      const u = { id: data.id, name: data.name || email.split("@")[0], email }
+      setUser(u)
+      localStorage.setItem("auth_user", JSON.stringify(u))
+    } catch (error: any) {
+      if (error.message === "Failed to fetch") {
+        throw new Error("No se puede conectar al servidor. Verifica que el backend esté corriendo y tenga CORS configurado.")
+      }
+      throw new Error(error.message || "Error al conectar con el servidor")
+    }
   }
 
   const register = async (name: string, email: string, password: string) => {
-    // TODO: Simula creación de cuenta localmente, Cambia por llamada a API
-    const exists = users.find((u) => u.email === email)
-    if (exists) throw new Error("El correo ya está registrado")
-    const newUser = { name, email, password }
-    const next = [...users, newUser]
-    setUsers(next)
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_BACKEND}/createUser`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, email, password }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.message || "Error al crear la cuenta")
+      }
+
+    } catch (error: any) {
+      if (error.message === "Failed to fetch") {
+        throw new Error("No se puede conectar al servidor. Verifica que el backend esté corriendo y tenga CORS configurado.")
+      }
+      throw new Error(error.message || "Error al conectar con el servidor")
+    }
   }
 
   const logout = () => {

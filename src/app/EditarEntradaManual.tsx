@@ -4,45 +4,49 @@ import { SiteHeader } from "@/components/site-header"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { useParams } from "react-router-dom"
 import { useEffect, useState } from "react"
-import recibosData from "./dashboard/data.json"
 
 const EditarEntradaManual = () => {
   const { id } = useParams()
   const [reciboData, setReciboData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchRecibo = async () => {
       try {
-        const recibo = recibosData.find((r) => r.id === Number(id))
+        const response = await fetch(`${import.meta.env.VITE_API_BACKEND}/editReceipt/${id}/savedData`)
         
-        if (recibo) {
-          // Convertir la fecha del formato "dd/mm/yyyy" a objeto Date
-          const [day, month, year] = recibo.fecha.split("/")
-          const fechaDate = new Date(Number(year), Number(month) - 1, Number(day))
-          
-          const datosFormateados = {
-            nombre: recibo.nombre,
-            fecha: fechaDate,
-            productos: [
-              { 
-                nombre: "", 
-                precio: 0, 
-                cantidad: 1, 
-                categoria: "", 
-                subCategoria: "" 
-              }
-            ],
-            total: recibo.total
-          }
-          
-          setReciboData(datosFormateados)
-        } else {
-          setReciboData(null)
+        if (!response.ok) {
+          throw new Error("Error al cargar el recibo")
         }
+
+        const data = await response.json()
+        
+        // Convertir la fecha del formato "yyyy-MM-dd" a objeto Date
+        const fechaDate = new Date(data.date)
+        
+        const datosFormateados = {
+          nombre: data.name,
+          fecha: fechaDate,
+          metodoPago: data.paymentMethod,
+          s3Key: data.s3Key,
+          productos: data.products.map((p: any) => ({
+            id: p.id,
+            nombre: p.name,
+            precio: p.price,
+            cantidad: p.quantity,
+            categoria: p.category,
+            subCategoria: p.subcategory,
+            receiptId: p.receiptId
+          })),
+          total: data.total
+        }
+        
+        setReciboData(datosFormateados)
         setLoading(false)
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error al cargar el recibo:", error)
+        setError(error.message)
         setLoading(false)
       }
     }
@@ -71,8 +75,10 @@ const EditarEntradaManual = () => {
           <div className="w-full ">
             {loading ? (
               <div className="text-center py-10">Cargando...</div>
+            ) : error ? (
+              <div className="text-center py-10 text-red-600">{error}</div>
             ) : reciboData ? (
-              <FormEditarRecibo initialData={reciboData} />
+              <FormEditarRecibo initialData={reciboData} receiptId={Number(id)} />
             ) : (
               <div className="text-center py-10">No se encontró el recibo</div>
             )}

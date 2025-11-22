@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
   Card,
   CardDescription,
@@ -7,11 +7,26 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 
-export function SectionCards() {
-  const [presupuesto, setPresupuesto] = useState(6200)
-  const totalGastado = 4250.75
-  const promedioRecibo = 75.34
-  const totalAcumulado = 45678
+type SectionCardsProps = {
+  data: {
+    budget: number
+    totalOfMonth: number
+    average: number
+    total: number
+  } | null
+}
+
+export function SectionCards({ data }: SectionCardsProps) {
+  const [presupuesto, setPresupuesto] = useState(0)
+  const totalGastado = data?.totalOfMonth || 0
+  const promedioRecibo = data?.average || 0
+  const totalAcumulado = data?.total || 0
+
+  useEffect(() => {
+    if (data?.budget) {
+      setPresupuesto(data.budget)
+    }
+  }, [data])
 
   const handlePresupuestoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value
