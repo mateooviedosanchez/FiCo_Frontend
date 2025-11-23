@@ -15,34 +15,33 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart"
 
+type CategoryData = {
+  name: string
+  total: number
+}
 
-
-const chartData = [
-  { categoria: "", total: 0},
-  { categoria: "alimentos", total: 160.40},
-  { categoria: "salud", total: 240.40},
-  { categoria: "transporte", total: 260.40},
-  { categoria: "entretenimiento", total: 1045.99},
-  { categoria: "servicios", total: 560.40},
-  { categoria: "otros", total: 660.40},
-]
-
+type ChartAreaInteractiveProps = {
+  categoriesData?: CategoryData[]
+}
 
 const chartConfig = {
-  visitors: {
-    label: "Visitors",
-  },
   total: {
-    label: "total",
-    color: "var(--primary)",
-  },
-  mobile: {
-    label: "Mobile",
+    label: "Total",
     color: "var(--primary)",
   },
 } satisfies ChartConfig
 
-export function ChartAreaInteractive() {
+export function ChartAreaInteractive({ categoriesData = [] }: ChartAreaInteractiveProps) {
+  const chartData = categoriesData.length > 0 
+    ? [
+        { categoria: "", total: 0 },
+        ...categoriesData.map(cat => ({
+          categoria: cat.name,
+          total: cat.total
+        }))
+      ]
+    : [{ categoria: "", total: 0 }]
+  
   return (
     <Card className="@container/card">
       <CardHeader>
@@ -55,27 +54,15 @@ export function ChartAreaInteractive() {
         >
           <AreaChart data={chartData}>
             <defs>
-              <linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id="fillTotal" x1="0" y1="0" x2="0" y2="1">
                 <stop
                   offset="5%"
-                  stopColor="var(--color-desktop)"
-                  stopOpacity={1.0}
-                />
-                <stop
-                  offset="95%"
-                  stopColor="var(--color-desktop)"
-                  stopOpacity={0.1}
-                />
-              </linearGradient>
-              <linearGradient id="fillMobile" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor="var(--color-mobile)"
+                  stopColor="var(--color-total)"
                   stopOpacity={0.8}
                 />
                 <stop
                   offset="95%"
-                  stopColor="var(--color-mobile)"
+                  stopColor="var(--color-total)"
                   stopOpacity={0.1}
                 />
               </linearGradient>
@@ -98,10 +85,9 @@ export function ChartAreaInteractive() {
             />
             <Area
               dataKey="total"
-              type="natural"
-              fill="url(#fillMobile)"
-              stroke="var(--color-mobile)"
-              stackId="a"
+              type="monotone"
+              fill="url(#fillTotal)"
+              stroke="var(--color-total)"
             />
           </AreaChart>
         </ChartContainer>

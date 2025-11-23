@@ -23,7 +23,8 @@ export function FormEditarCuenta({
   const [success, setSuccess] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [avatarFile, setAvatarFile] = useState<File | null>(null)
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(user?.profileImageUrl || null)
+  const [uploadingImage, setUploadingImage] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,9 +56,99 @@ export function FormEditarCuenta({
 
   const handleRemoveAvatar = () => {
     setAvatarFile(null)
-    setAvatarPreview(null)
+    setAvatarPreview(user?.profileImageUrl || null)
     if (fileInputRef.current) {
       fileInputRef.current.value = ''
+    }
+  }
+
+  async function handleUploadImage() {
+    if (!avatarFile) {
+      setError("Por favor selecciona una imagen primero")
+      return
+    }
+
+    setError(null)
+    setSuccess(null)
+    setUploadingImage(true)
+
+    try {
+      // Convertir archivo a base64
+      const base64Image = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onloadend = () => resolve(reader.result as string)
+        reader.onerror = reject
+        reader.readAsDataURL(avatarFile)
+      })
+
+      // Extraer extensión del archivo
+      const fileExtension = avatarFile.name.split('.').pop() || 'jpg'
+
+      // Llamar a Lambda para subir la imagen
+      const lambdaUrl = import.meta.env.VITE_AWS_LAMBDA_UPLOAD_URL
+      if (!lambdaUrl) {
+        throw new Error('URL de Lambda no configurada. Agrega VITE_AWS_LAMBDA_UPLOAD_URL en tu archivo .env')
+      }
+
+      const uploadResponse = await fetch(lambdaUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          image: base64Image,
+          userId: user?.id.toString(),
+          fileType: fileExtension,
+        }),
+      })
+
+      if (!uploadResponse.ok) {
+        throw new Error('Error al subir la imagen a S3')
+      }
+
+      const uploadData = await uploadResponse.json()
+      
+      if (!uploadData.success) {
+        throw new Error(uploadData.error || 'Error al subir la imagen')
+      }
+
+      const imageUrl = uploadData.imageUrl
+
+      // Actualizar el perfil con la nueva imagen
+      const updateData = {
+        name: user?.name,
+        email: user?.email,
+        profileImageUrl: imageUrl
+      }
+
+      const response = await fetch(`${import.meta.env.VITE_API_BACKEND}/editAccount/${user?.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify(updateData),
+      })
+
+      if (!response.ok) {
+        throw new Error('Error al actualizar la foto de perfil')
+      }
+
+      // Actualizar el contexto con la nueva imagen
+      updateUser(user?.name || '', user?.email || '', imageUrl)
+      
+      setAvatarPreview(imageUrl)
+      setSuccess("Foto de perfil actualizada correctamente")
+      
+      // Limpiar el archivo seleccionado
+      setAvatarFile(null)
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
+    } catch (err: any) {
+      setError(err.message || "Error al subir la imagen")
+    } finally {
+      setUploadingImage(false)
     }
   }
 
@@ -73,41 +164,14 @@ export function FormEditarCuenta({
 
     setLoading(true)
     try {
-      let s3Key = undefined
-
-      // Si hay un archivo de avatar, primero subirlo para obtener la s3Key
-      if (avatarFile) {
-        const uploadFormData = new FormData()
-        uploadFormData.append('avatar', avatarFile)
-        
-        // Endpoint para subir la imagen y obtener la s3Key, hay que ajustar el nombre de la api
-        const uploadResponse = await fetch(`${import.meta.env.VITE_API_BACKEND}/upload-avatar`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          },
-          body: uploadFormData,
-        })
-
-        if (!uploadResponse.ok) {
-          throw new Error('Error al subir la imagen')
-        }
-
-        const uploadData = await uploadResponse.json()
-        s3Key = uploadData.s3Key // Asumiendo que el backend retorna { s3Key: "..." }
-      }
-
-      // Actualizar el perfil con los datos en formato JSON
-      const updateData: { name: string; email: string; s3Key?: string } = {
+      // Actualizar solo nombre y email
+      const updateData = {
         name,
         email,
+        profileImageUrl: user?.profileImageUrl
       }
 
-      if (s3Key) {
-        updateData.s3Key = s3Key
-      }
-
-      const response = await fetch(`http://localhost:8080/api/editAccount/${user?.id}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BACKEND}/editAccount/${user?.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -121,7 +185,7 @@ export function FormEditarCuenta({
       }
 
       // Actualizar el contexto de autenticación con los nuevos datos
-      updateUser(name, email)
+      updateUser(name, email, user?.profileImageUrl)
       
       setSuccess("Perfil actualizado correctamente")
     } catch (err: any) {
@@ -153,20 +217,34 @@ export function FormEditarCuenta({
               variant="outline"
               size="sm"
               onClick={() => fileInputRef.current?.click()}
+              disabled={uploadingImage}
             >
               <IconCamera className="mr-2 h-4 w-4" />
               {avatarPreview ? 'Cambiar foto' : 'Agregar foto'}
             </Button>
             
-            {avatarPreview && (
+            {avatarFile && (
+              <Button
+                type="button"
+                variant="default"
+                size="sm"
+                onClick={handleUploadImage}
+                disabled={uploadingImage}
+              >
+                {uploadingImage ? 'Subiendo...' : 'Guardar foto'}
+              </Button>
+            )}
+            
+            {avatarFile && (
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
                 onClick={handleRemoveAvatar}
+                disabled={uploadingImage}
               >
                 <IconTrash className="mr-2 h-4 w-4" />
-                Eliminar
+                Cancelar
               </Button>
             )}
           </div>

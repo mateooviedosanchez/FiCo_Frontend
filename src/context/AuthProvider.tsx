@@ -1,18 +1,18 @@
 import React, { createContext, useContext, useState } from "react"
 
 type AuthContextType = {
-  user: { id: number; name: string; email: string } | null
+  user: { id: number; name: string; email: string; profileImageUrl?: string } | null
   login: (email: string, password: string) => Promise<void>
   logout: () => void
   register: (name: string, email: string, password: string) => Promise<void>
-  updateUser: (name: string, email: string) => void
+  updateUser: (name: string, email: string, profileImageUrl?: string) => void
   isAuthenticated: boolean
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<{ id: number; name: string; email: string } | null>(() => {
+  const [user, setUser] = useState<{ id: number; name: string; email: string; profileImageUrl?: string } | null>(() => {
     const s = localStorage.getItem("auth_user")
     return s ? JSON.parse(s) : null
   })
@@ -33,7 +33,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
 
       const data = await response.json()
-      const u = { id: data.id, name: data.name || email.split("@")[0], email }
+      const u = { 
+        id: data.id, 
+        name: data.name || email.split("@")[0], 
+        email,
+        profileImageUrl: data.profileImageUrl
+      }
       setUser(u)
       localStorage.setItem("auth_user", JSON.stringify(u))
     } catch (error: any) {
@@ -72,9 +77,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.removeItem("auth_user")
   }
 
-  const updateUser = (name: string, email: string) => {
+  const updateUser = (name: string, email: string, profileImageUrl?: string) => {
     if (user) {
       const updatedUser = { ...user, name, email }
+      if (profileImageUrl !== undefined) {
+        updatedUser.profileImageUrl = profileImageUrl
+      }
       setUser(updatedUser)
       localStorage.setItem("auth_user", JSON.stringify(updatedUser))
     }
