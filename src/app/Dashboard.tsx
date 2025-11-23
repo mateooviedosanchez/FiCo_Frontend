@@ -17,11 +17,12 @@ type DashboardData = {
   totalOfMonth: number
   average: number
   total: number
-  receipts: {
+  receiptsDto: {
     id: number
     name: string
     date: string
     total: number
+    paymentMethod: string
   }[]
 }
 
@@ -89,7 +90,7 @@ const Dashboard = () => {
               <div className="px-4 lg:px-6">
                 <ChartAreaInteractive />
               </div>
-              <DataTable data={dashboardData?.receipts.map(r => ({
+              <DataTable data={dashboardData?.receiptsDto?.map(r => ({
                 id: r.id,
                 nombre: r.name,
                 fecha: r.date,

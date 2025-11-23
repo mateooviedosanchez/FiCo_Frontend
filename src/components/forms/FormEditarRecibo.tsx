@@ -67,7 +67,6 @@ export function FormEditarRecibo({ initialData, receiptId }: { initialData?: any
         date: format(values.fecha, "yyyy-MM-dd"),
         total: values.total,
         paymentMethod: values.metodoPago,
-        s3Key: initialData?.s3Key || "1k215",
         products: initialData?.productos || []
       };
 

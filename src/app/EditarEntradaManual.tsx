@@ -23,13 +23,13 @@ const EditarEntradaManual = () => {
         const data = await response.json()
         
         // Convertir la fecha del formato "yyyy-MM-dd" a objeto Date
-        const fechaDate = new Date(data.date)
+        // Agregar 'T00:00:00' para evitar problemas de zona horaria
+        const fechaDate = new Date(data.date + 'T00:00:00')
         
         const datosFormateados = {
           nombre: data.name,
           fecha: fechaDate,
           metodoPago: data.paymentMethod,
-          s3Key: data.s3Key,
           productos: data.products.map((p: any) => ({
             id: p.id,
             nombre: p.name,

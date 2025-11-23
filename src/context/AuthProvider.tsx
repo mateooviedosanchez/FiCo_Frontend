@@ -5,6 +5,7 @@ type AuthContextType = {
   login: (email: string, password: string) => Promise<void>
   logout: () => void
   register: (name: string, email: string, password: string) => Promise<void>
+  updateUser: (name: string, email: string) => void
   isAuthenticated: boolean
 }
 
@@ -71,9 +72,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.removeItem("auth_user")
   }
 
+  const updateUser = (name: string, email: string) => {
+    if (user) {
+      const updatedUser = { ...user, name, email }
+      setUser(updatedUser)
+      localStorage.setItem("auth_user", JSON.stringify(updatedUser))
+    }
+  }
+
   return (
     <AuthContext.Provider
-      value={{ user, login, logout, register, isAuthenticated: !!user }}
+      value={{ user, login, logout, register, updateUser, isAuthenticated: !!user }}
     >
       {children}
     </AuthContext.Provider>

@@ -1,6 +1,7 @@
 import {
   IconDotsVertical,
   IconLogout,
+  IconUserCircle,
 } from "@tabler/icons-react"
 
 import {
@@ -19,6 +20,7 @@ import {
 } from "@/components/ui/sidebar"
 import { useAuth } from "@/context/AuthProvider"
 import { useNavigate } from "react-router-dom"
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 
 export function NavUser({
   user,
@@ -33,7 +35,6 @@ export function NavUser({
   const { logout, user: authUser } = useAuth()
   const navigate = useNavigate()
 
-  // Prefer prop user, otherwise use authenticated user from context
   const displayUser = user ?? authUser ?? { name: "Cuenta", email: "" }
 
   return (
@@ -45,6 +46,10 @@ export function NavUser({
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
+              <Avatar className="h-8 w-8 rounded-lg grayscale">
+                {/* <AvatarImage src={user.avatar} alt={displayUser.name} /> */}
+                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+              </Avatar>
               <div className="flex flex-col text-left text-sm leading-tight">
                 <span className="truncate font-medium">{displayUser.name}</span>
                 <span className="text-muted-foreground truncate text-xs">
@@ -62,6 +67,10 @@ export function NavUser({
           >
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                <Avatar className="h-8 w-8 rounded-lg">
+                  {/* <AvatarImage src={user.avatar} alt={user.name} /> */}
+                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{displayUser.name}</span>
                   <span className="text-muted-foreground truncate text-xs">
@@ -71,6 +80,10 @@ export function NavUser({
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => navigate("/perfil")}>
+              <IconUserCircle />
+              Perfil
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={() => { logout(); navigate("/", { replace: true }) }}>
               <IconLogout />
               Cerrar sesión

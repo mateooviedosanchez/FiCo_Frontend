@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import {
   Card,
   CardDescription,
@@ -6,6 +6,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { useAuth } from "@/context/AuthProvider"
 
 type SectionCardsProps = {
   data: {
@@ -17,7 +18,9 @@ type SectionCardsProps = {
 }
 
 export function SectionCards({ data }: SectionCardsProps) {
+  const { user } = useAuth()
   const [presupuesto, setPresupuesto] = useState(0)
+  const timeoutRef = useRef<number | null>(null)
   const totalGastado = data?.totalOfMonth || 0
   const promedioRecibo = data?.average || 0
   const totalAcumulado = data?.total || 0
@@ -27,6 +30,29 @@ export function SectionCards({ data }: SectionCardsProps) {
       setPresupuesto(data.budget)
     }
   }, [data])
+
+  const updateBudget = async (value: number) => {
+    if (!user?.id) return
+    
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BACKEND}/dashboard/${user.id}/changeBudget`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(value),
+        }
+      )
+
+      if (!response.ok) {
+        throw new Error('Error al actualizar el presupuesto')
+      }
+    } catch (error) {
+      console.error('Error:', error)
+    }
+  }
 
   const handlePresupuestoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value
@@ -39,12 +65,30 @@ export function SectionCards({ data }: SectionCardsProps) {
     const value = parseFloat(inputValue)
     if (!isNaN(value) && value >= 0) {
       setPresupuesto(value)
+      
+      // Limpiar timeout anterior
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+      
+      // Actualizar después de 1 segundo sin cambios
+      timeoutRef.current = setTimeout(() => {
+        updateBudget(value)
+      }, 1000)
     }
   }
 
   const handlePresupuestoFocus = (e: React.FocusEvent<HTMLInputElement>) => {
     e.target.select()
   }
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+    }
+  }, [])
 
   return (
     <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">

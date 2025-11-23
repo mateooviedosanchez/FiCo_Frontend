@@ -6,6 +6,7 @@ import { AuthProvider } from "./context/AuthProvider"
 import { RequireAuth } from "./components/RequireAuth"
 import Login from "./app/Login"
 import EditarEntradaManual from "./app/EditarEntradaManual"
+import Perfil from "./app/Perfil"
 
 const FiCoApp = () => {
     return (
@@ -26,6 +27,7 @@ const FiCoApp = () => {
                             </div>
                         } />
                         <Route path="/entrada-manual" element={<RequireAuth><EntradaManual /></RequireAuth>} />
+                        <Route path="/perfil" element={<RequireAuth><Perfil /></RequireAuth>} />
                         <Route path="*" element={<Navigate to="/" replace />} />
                     </Routes>
                 </AuthProvider>
