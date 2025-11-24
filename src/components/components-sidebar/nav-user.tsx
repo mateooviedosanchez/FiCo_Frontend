@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/sidebar"
 import { useAuth } from "@/context/AuthProvider"
 import { useNavigate } from "react-router-dom"
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
+import { Avatar, AvatarFallback } from "../ui/avatar"
 
 export function NavUser({
   user,
