@@ -33,6 +33,7 @@ type DashboardData = {
 const Dashboard = () => {
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const { user } = useAuth()
 
   useEffect(() => {
@@ -40,12 +41,17 @@ const Dashboard = () => {
       if (!user?.id) return
       
       try {
+        setError(null)
         const response = await fetch(`${import.meta.env.VITE_API_BACKEND}/dashboard/${user.id}`)
-        if (!response.ok) throw new Error("Error al cargar dashboard")
+        if (!response.ok) {
+          const errorText = await response.text()
+          throw new Error(`Error ${response.status}: ${errorText || 'Error al cargar dashboard'}`)
+        }
         const data = await response.json()
         setDashboardData(data)
       } catch (error) {
         console.error("Error:", error)
+        setError(error instanceof Error ? error.message : "Error desconocido al cargar el dashboard")
       } finally {
         setLoading(false)
       }
@@ -69,6 +75,34 @@ const Dashboard = () => {
           <SiteHeader />
           <div className="flex flex-1 flex-col items-center justify-center">
             <p>Cargando...</p>
+          </div>
+        </SidebarInset>
+      </SidebarProvider>
+    )
+  }
+
+  if (error || !dashboardData) {
+    return (
+      <SidebarProvider
+        style={
+          {
+            "--sidebar-width": "calc(var(--spacing) * 72)",
+            "--header-height": "calc(var(--spacing) * 12)",
+          } as React.CSSProperties
+        }
+      >
+        <AppSidebar variant="sidebar" />
+        <SidebarInset>
+          <SiteHeader />
+          <div className="flex flex-1 flex-col items-center justify-center gap-4 p-4">
+            <p className="text-red-500 font-semibold">Error al cargar el dashboard</p>
+            {error && <p className="text-sm text-gray-600">{error}</p>}
+            <button 
+              onClick={() => window.location.reload()} 
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+              Recargar página
+            </button>
           </div>
         </SidebarInset>
       </SidebarProvider>
